@@ -13,6 +13,7 @@
 - 支持 ES 模块（import/export 在 Run、Test、Preview 里共用同一套解析）。
 - 斜杠命令、CLAUDE.md、`#` 记忆、`/rewind`、Esc 中断。
 - Agent 的改动只进内存，`/save` 才写盘。
+- 可选的 `Bash` 工具：用 [WebContainers](https://webcontainers.io/) 在页面里起一个真 shell，能跑 node、npm、`node --test`。它要求页面跨源隔离（`Cross-Origin-Opener-Policy: same-origin` 加 `Cross-Origin-Embedder-Policy: credentialless` 或 `require-corp`），没有这两个响应头时 `Bash` 不会出现，其余功能照常。WebContainers 的运行时由 StackBlitz 托管，用于商业生产环境需要他们的商业许可，原型和 PoC 不需要。
 
 ## 模型
 
@@ -35,6 +36,8 @@ python3 -m http.server 8123
 
 读写本地文件夹用到 File System Access API（`showDirectoryPicker`），需要 Chromium 系浏览器；其他浏览器可以用页面里的内存工作区。
 
+`python3 -m http.server` 不会发跨源隔离的响应头，所以本地这样跑没有 `Bash`。要试 `Bash`，用能加这两个响应头的服务器，或直接用在线版。
+
 ## 已知限制
 
 - 小模型（7B 级）容易伪造观察结果、没验证就说完成；harness 里加了一些兜底（语法检查、重复报错守卫、交互后页面无变化则不许结束），但不能替代更强的模型。
@@ -44,3 +47,5 @@ python3 -m http.server 8123
 ## 来源
 
 这是 [问野 / Roam](https://roam.xiaopingfeng.com/) 里的一个条目（RM·0009），源码同时在 <https://github.com/fxp/roam>。作者：冯小平（<https://xiaopingfeng.com>）。
+
+同一个 Agent 外壳还有一个接 Wasmer SDK 的版本：<https://roam.xiaopingfeng.com/browser-coding-agent-wasmer/>（RM·0010）。两个运行时的对比，和“什么任务能搬进浏览器标签页”的实测，见 <https://xiaopingfeng.com/deepdive/agent-in-the-browser/>。
